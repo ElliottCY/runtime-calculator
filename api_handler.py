@@ -1,5 +1,6 @@
 import requests
 import pprint 
+import csv
 def get_solar(bifacial_gain, lat, lon, peakpower, loss, angle, aspect, tracking_type, mounting_place, pvtech_choice):
     url = "https://re.jrc.ec.europa.eu/api/v5_2/seriescalc"
 
@@ -25,7 +26,11 @@ def get_solar(bifacial_gain, lat, lon, peakpower, loss, angle, aspect, tracking_
 
     response = requests.get(url, params=params)
     data = response.json()
-    #pprint.pprint(data)
+    # pprint.pprint(data)
+
+    hourly_irradiance = []
+    for hour in data["outputs"]["hourly"]:
+        hourly_irradiance.append(hour["G(i)"]/1000)
    
     hourly_solar = []
     for hour in data["outputs"]["hourly"]:
@@ -37,6 +42,11 @@ def get_solar(bifacial_gain, lat, lon, peakpower, loss, angle, aspect, tracking_
     
     #pprint.pprint(hourly_solar)
     
+    
+    with open("solar.csv", "w", newline="") as f:
+        writer = csv.writer(f)
+        writer.writerow(hourly_irradiance)
+
 
     return hourly_solar
 
