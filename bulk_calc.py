@@ -31,7 +31,7 @@ for _, row in df.iterrows():
         for i in range(len(solar)):
             solar[i] = solar[i]*row["Peak power"]
             
-    values.append(runtime_calculator(solar, bifacial_gain, row["Load"], row["Battery capacity"], row["Battery rate"], inverter_rate, row["Generator output"]))
+    values.append(runtime_calculator(solar, 1, bifacial_gain, row["Load"], row["Battery capacity"], row["Battery rate"], inverter_rate, row["Generator output"]))
 
 runtime = pd.Series(values)
 

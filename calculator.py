@@ -25,6 +25,17 @@ def submit():
         "8" : 14.4,
     }
 
+    battery_high_soc = {
+        "0" : 0,
+        "2" : 1.92,
+        "3" : 2.88,
+        "4" : 3.84,
+        "5" : 4.8,
+        "6" : 5.76,
+        "7" : 6.72,
+        "8" : 7.68,
+    }
+
     required = [
         bifacial_gain, lat, lon, peakpower, loss, angle, aspect, tracking, mounting_place, pvtech_choice, annual_load, battery_num, inverter_rate
     ]
@@ -52,6 +63,7 @@ def submit():
 
     tracking_type = tracking_options[tracking.get()]
     battery_rate = battery_rate_options[battery_num.get()]
+    high_soc_rate =  battery_high_soc[battery_num.get()]
     battery_capacity = int(battery_num.get()) * 4.8
 
     if(float(peakpower.get()) > 0):
@@ -60,7 +72,7 @@ def submit():
         data = 0
 
 
-    runtime = runtime_calculator(data, float(bifacial_gain.get()), float(annual_load.get()), battery_capacity, battery_rate, float(inverter_rate.get()), float(generator_output.get()))
+    runtime = runtime_calculator(data, high_soc_rate, float(bifacial_gain.get()), float(annual_load.get()), battery_capacity, battery_rate, float(inverter_rate.get()), float(generator_output.get()))
     
     if float(inverter_rate.get()) < float(annual_load.get()):
         result_label.config(text=f"{round(runtime, 2)} \nWarning: inverter rate below average load")
