@@ -18,6 +18,8 @@ pvtech_choice = "crystSi"
 bifacial_gain = 0
 inverter_rate = 12
 peak_power = 1
+start = 0
+end = 0
 
 hourly_solar = get_solar(bifacial_gain, lat, lon, peak_power, loss, angle, aspect, tracking_type, mounting_place, pvtech_choice)
 
@@ -31,7 +33,7 @@ for _, row in df.iterrows():
         for i in range(len(solar)):
             solar[i] = solar[i]*row["Peak power"]
             
-    values.append(runtime_calculator(solar, 1, bifacial_gain, row["Load"], row["Battery capacity"], row["Battery rate"], inverter_rate, row["Generator output"]))
+    values.append(runtime_calculator(start, end, solar, bifacial_gain, row["Load"], row["Battery capacity"], row["Battery rate"], inverter_rate, row["Generator output"]))
 
 runtime = pd.Series(values)
 

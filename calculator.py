@@ -5,6 +5,21 @@ from logic import runtime_calculator
 
 # Function to handle form submission
 def submit():
+    month_hours = {
+        "January": 0,
+        "February": 31 * 24, # 744
+        "March": (31 + 28) * 24, # 1416
+        "April": (31 + 28 + 31) * 24, # 2160
+        "May": (31 + 28 + 31 + 30) * 24, # 2880
+        "June": (31 + 28 + 31 + 30 + 31) * 24, # 3624
+        "July": (31 + 28 + 31 + 30 + 31 + 30) * 24, # 4344
+        "August": (31 + 28 + 31 + 30 + 31 + 30 + 31) * 24, # 5088
+        "September": (31 + 28 + 31 + 30 + 31 + 30 + 31 + 31) * 24, # 5832
+        "October": (31 + 28 + 31 + 30 + 31 + 30 + 31 + 31 + 30) * 24, # 6552
+        "November": (31 + 28 + 31 + 30 + 31 + 30 + 31 + 31 + 30 + 31) * 24, # 7296
+        "December": (31 + 28 + 31 + 30 + 31 + 30 + 31 + 31 + 30 + 31 + 30) * 24 # 8016
+}
+
     tracking_options = {
         "Fixed" : 0,
         "Single-axis": 1,
@@ -23,17 +38,6 @@ def submit():
         "6" : 14.4,
         "7" : 14.4,
         "8" : 14.4,
-    }
-
-    battery_high_soc = {
-        "0" : 0,
-        "2" : 1.92,
-        "3" : 2.88,
-        "4" : 3.84,
-        "5" : 4.8,
-        "6" : 5.76,
-        "7" : 6.72,
-        "8" : 7.68,
     }
 
     required = [
@@ -60,10 +64,10 @@ def submit():
         result_label.config(text= "Generator output must be greater than average load")
         return
 
-
+    start = month_hours[start_month.get()]
+    end = month_hours[end_month.get()]
     tracking_type = tracking_options[tracking.get()]
     battery_rate = battery_rate_options[battery_num.get()]
-    high_soc_rate =  battery_high_soc[battery_num.get()]
     battery_capacity = int(battery_num.get()) * 4.8
 
     if(float(peakpower.get()) > 0):
@@ -72,7 +76,7 @@ def submit():
         data = 0
 
 
-    runtime = runtime_calculator(data, high_soc_rate, float(bifacial_gain.get()), float(annual_load.get()), battery_capacity, battery_rate, float(inverter_rate.get()), float(generator_output.get()))
+    runtime = runtime_calculator(start, end, data, float(bifacial_gain.get()), float(annual_load.get()), battery_capacity, battery_rate, float(inverter_rate.get()), float(generator_output.get()))
     
     if float(inverter_rate.get()) < float(annual_load.get()):
         result_label.config(text=f"{round(runtime, 2)} \nWarning: inverter rate below average load")
@@ -84,7 +88,7 @@ def submit():
 # Create main window
 root = tk.Tk()
 root.title("7 Input Form")
-root.geometry("800x400")
+root.geometry("1000x500")
 
 # Labels + Inputs
 tk.Label(root, text="Latitude").grid(row=0, column=0, padx=10, pady=5, sticky="w")
@@ -148,6 +152,14 @@ tk.Label(root, text="Max Generator Output (KW)").grid(row=2, column=2, padx=10, 
 generator_output = ttk.Combobox(root, values=[6, 8, 20, 35], state="readonly")
 generator_output.grid(row=2, column=3, padx=10, pady=10)
 
+tk.Label(root, text="Start Month").grid(row=4, column=2, padx=10, pady=5, sticky="w")
+start_month = ttk.Combobox(root, values=["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"], state="readonly")
+start_month.grid(row=4, column=3, padx=10, pady=10)
+                      
+tk.Label(root, text="End Month (select same month for 1 year time frame)").grid(row=5, column=2, padx=10, pady=5, sticky="w")
+end_month = ttk.Combobox(root, values=["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"], state="readonly")
+end_month.grid(row=5, column=3, padx=10, pady=10)
+                      
 # Submit button
 submit_button = tk.Button(root, text="Submit", command=submit)
 submit_button.grid(row=10, column=0, columnspan=2, pady=10)
@@ -170,6 +182,8 @@ annual_load.insert(0, "5")
 inverter_rate.insert(0, "12")
 bifacial_gain.insert(0, "0")
 generator_output.current(0)
+start_month.current(0)
+end_month.current(0)
 
 tracking.current(0)         # "Fixed"
 mounting_place.current(1)   # "building"
