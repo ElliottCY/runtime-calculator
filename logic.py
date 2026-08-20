@@ -27,6 +27,8 @@ def runtime_calculator(start, end, hourly_solar, bifacial_gain, load, battery_ca
     generator_on = False
     high_soc_rate = battery_capacity/5
     
+    if(load > inverter_rate*inverter_efficiency):
+        return hours
     
     for j in range(hours):
         i = (start + j) % hours
@@ -74,8 +76,6 @@ def runtime_calculator(start, end, hourly_solar, bifacial_gain, load, battery_ca
 
                 temp += 1
 
-    if(load > inverter_rate*inverter_efficiency):
-        return 8760
-
+    
     return runtime
     
